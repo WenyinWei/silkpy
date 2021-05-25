@@ -2,14 +2,14 @@
 class GeometryMap:
     """Base class for geometry map.
     """
-    def __init__(self, exprs, syms) -> None:
+    def __init__(self, exprs, syms):
         from sympy import Array, oo
         if not isinstance(exprs, list) and not isinstance(exprs, Array):
             raise ValueError("The ctor arg of GeometryMap -- exprs -- should be a list of sympy expressions.")
         self._exprs = Array(exprs)
 
-        if not isinstance(syms, list):
-            raise ValueError("The ctor arg of GeometryMap -- syms -- should be a list of sympy variables, or a list of (sympy.Symbol, inf, sup)")
+        # if not isinstance(syms, list):
+        #     raise ValueError("The ctor arg of GeometryMap -- syms -- should be a list of sympy variables, or a list of (sympy.Symbol, inf, sup)")
         self._syms = []
         for sym in syms:
             if isinstance(sym, tuple):
