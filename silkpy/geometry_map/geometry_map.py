@@ -5,7 +5,7 @@ class GeometryMap:
     def __init__(self, exprs, syms) -> None:
         from sympy import Array, oo
         if not isinstance(exprs, list) and not isinstance(exprs, Array):
-            raise ValueError("The ctor arg of GeometryMap -- exprs -- should be a list of equations, or a list of sympy expressions.")
+            raise ValueError("The ctor arg of GeometryMap -- exprs -- should be a list of sympy expressions.")
         self._exprs = Array(exprs)
 
         if not isinstance(syms, list):
@@ -36,5 +36,7 @@ class GeometryMap:
         else:
             return self._syms[i][1:]
 
-    def Jac(self):
-        pass
+    def jacobian(self):
+        from sympy import Array
+        return self.expr().diff(
+                    Array(self.sym()))

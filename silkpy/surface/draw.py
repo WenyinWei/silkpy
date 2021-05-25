@@ -3,7 +3,7 @@ from .surface import ParametricSurface as _ParametricSurface
 # (lambda surface: surface.curvature().simplify())
 def draw_surface_plotly(
     surface:_ParametricSurface, 
-    num=[50, 50], domain=[(-1, 1), (-1, 1)], exist_range=[(None, None), (None, None), (None, None)], 
+    domain=[(-1, 1), (-1, 1)], num=[50, 50], exist_range=[(None, None), (None, None), (None, None)], 
     color_func=None,
     fig=None, *arg, **kwarg):
     from numpy import mgrid
@@ -25,9 +25,10 @@ def draw_surface_plotly(
             domain[i] = domain[i].args[0]
 
     u_domain_, v_domain_ = mgrid[
-        float(domain[0].start):float(domain[0].end):num[0],
-        float(domain[1].start):float(domain[1].end):num[1],
+        float(domain[0].start):float(domain[0].end):int(num[0])*1j,
+        float(domain[1].start):float(domain[1].end):int(num[1])*1j,
     ]
+
     values_ = lambdify(surface.sym(), surface.expr(), 'numpy')(u_domain_, v_domain_)
     if color_func is not None:
         colors_ = lambdify(surface.sym(), color_func(surface), 'numpy')(u_domain_, v_domain_)

@@ -16,13 +16,13 @@ class ParametricCurve(GeometryMap):
     # def __str__(self):
     #     return f"A curve = {self._r} in {self._coord} coordinate system, with {self.sym(0)} in {self.sym(0)_limit}."
     
-    def curvature(self):
+    def curvature(self): # k(t)
         from silkpy.sympy_utility import norm, cross 
         drdt = self.expr().diff(self.sym(0))
         d2rdt2 = drdt.diff(self.sym(0))
         return norm(cross(drdt, d2rdt2)) / norm(drdt)**3
         
-    def torsion(self):
+    def torsion(self): # \tau(t)
         from silkpy.sympy_utility import norm, cross, triple_prod
         drdt = self.expr().diff(self.sym(0))
         d2rdt2 = drdt.diff(self.sym(0))
@@ -32,23 +32,17 @@ class ParametricCurve(GeometryMap):
         denominator = norm( cross( drdt, d2rdt2 ) )**3
         return numerator / denominator
 
+    def unit_tangent_vec(self): # \vec{T}(t)
+        from silkpy.sympy_utility import norm
+        drdt = self.expr().diff(self.sym(0))
+        return (drdt / norm(drdt)).simplify()
+    def unit_normal_vec(self): # \vec{N}(t)
+        from silkpy.sympy_utility import norm
+        d2rdt2 = self.expr().diff(self.sym(0), 2)
+        return (d2rdt2 / norm(d2rdt2)).simplify()
+    def unit_subnormal_vec(self): # \vec{B}(t)
+        from silkpy.sympy_utility import cross
+        return cross( self.unit_tangent_vec(), self.unit_normal_vec() ).simplify()
 
 
-def param_transform(old_curve, newt=None, t_expr=None):
-    from sympy import S, solveset, Eq
-    if newt is None: 
-        from sympy import Symbol
-        newt = Symbol('s', real=True)
-        
-        from sympy import integrate
-        drdt = norm(old_curve.r_t())
-        newt_expr = integrate(drdt, old_curve._t).simplify()
-        solset = solveset(Eq(newt, newt_expr), t, domain=S.Reals)
-        if len(solset) != 1:
-            raise RuntimeError(f"Sympy is not smart enough to inverse s(t) into t(s).\
-            It found these solutions: {solset}.\
-            Users need to choose from them or deduce manually, and then set it by obj.param_norm(s_symbol, t_expressed_by_s")
-        t_expr = next(iter(solset))
-    return ParametricCurve(
-        old_curve._r.applyfunc(lambda x: x.subs(old_curve._t, t_expr)), 
-        (newt, newt_expr.subs(old_curve._t, old_curve._t_limit[0]), newt_expr.subs(old_curve._t, old_curve._t_limit[1])), old_curve._sys)
+
