@@ -8,7 +8,23 @@ class ParametricCurve(GeometryMap):
     def __init__(self, exprs, sym):
         if not isinstance(sym, list): sym = [sym]
         GeometryMap.__init__(self, exprs, sym)
+    def subs(self, subs_arg):
+        return ParametricCurve(self._exprs.subs(subs_arg), self._syms)
+
+    def chain(self, other):
+        from ..geometry_map.coord_transform import CoordTransform
+
+        assert( len(other.sym()) == int(self.expr().shape.args[0]) )
         
+        if isinstance(other, CoordTransform):
+            return ParametricCurve(other._exprs.subs({
+                other.sym(i): self.expr(i) for i in range(len(self.sym()))}), 
+                self._syms)
+        else:
+            raise TypeError("The chain succession must be a GeometryMap.")
+    def __or__(self, other):
+        return self.chain(other)
+
 
 #     def r_t(self):
 #         return self._r.diff(self.sym(0))

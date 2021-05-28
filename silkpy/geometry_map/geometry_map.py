@@ -1,4 +1,7 @@
 
+from numpy import isin
+
+
 class GeometryMap:
     """Base class for geometry map.
     """
@@ -23,6 +26,9 @@ class GeometryMap:
             return self._exprs
         else:
             return self._exprs[i]
+
+    def subs(self, subs_arg):
+        return GeometryMap(self, self._exprs.subs(subs_arg), self._syms)
 
     def sym(self, i=None):
         if i is None:
