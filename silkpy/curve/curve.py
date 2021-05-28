@@ -48,7 +48,7 @@ class ParametricCurve(GeometryMap):
         denominator = norm( cross( drdt, d2rdt2 ) )**3
         return numerator / denominator
 
-    def TNB(self): # \vec{T}(t), \vec{N}(t), \vec{B}(t)
+    def T_N_B(self): # \vec{T}(t), \vec{N}(t), \vec{B}(t)
         from silkpy.sympy_utility import norm, cross
         drdt = self.expr().diff(self.sym(0))
         d2rdt2 = self.expr().diff(self.sym(0), 2)
