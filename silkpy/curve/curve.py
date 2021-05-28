@@ -48,17 +48,15 @@ class ParametricCurve(GeometryMap):
         denominator = norm( cross( drdt, d2rdt2 ) )**3
         return numerator / denominator
 
-    def unit_tangent_vec(self): # \vec{T}(t)
-        from silkpy.sympy_utility import norm
+    def TNB(self): # \vec{T}(t), \vec{N}(t), \vec{B}(t)
+        from silkpy.sympy_utility import norm, cross
         drdt = self.expr().diff(self.sym(0))
-        return (drdt / norm(drdt)).simplify()
-    def unit_normal_vec(self): # \vec{N}(t)
-        from silkpy.sympy_utility import norm
         d2rdt2 = self.expr().diff(self.sym(0), 2)
-        return (d2rdt2 / norm(d2rdt2)).simplify()
-    def unit_subnormal_vec(self): # \vec{B}(t)
-        from silkpy.sympy_utility import cross
-        return cross( self.unit_tangent_vec(), self.unit_normal_vec() ).simplify()
 
+        T = (drdt / norm(drdt)).simplify()
+        N = (d2rdt2 / norm(d2rdt2)).simplify()
+        B = cross(T, N).simplify()
+        return T, N, B
+                
 
 
