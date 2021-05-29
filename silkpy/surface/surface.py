@@ -23,10 +23,10 @@ class ParametricSurface(GeometryMap):
 
     @cached_property
     def r_u(self):
-        return self.expr().diff(self.sym(0)).simplify()
+        return self.expr().diff(self.sym(0)).simplify().refine()
     @cached_property
     def r_v(self):
-        return self.expr().diff(self.sym(1)).simplify()
+        return self.expr().diff(self.sym(1)).simplify().refine()
 
     # def __str__(self):
     #     return f"A surface = {self.expr()}, with {self.u} domain {self._u_limit}, {self.v} domain {self._v_limit}."
@@ -37,7 +37,10 @@ class ParametricSurface(GeometryMap):
     def E_F_G(self): 
         from silkpy.sympy_utility import dot
         r_u, r_v = self.r_u, self.r_v
-        return dot(r_u, r_u), dot(r_u, r_v), dot(r_v, r_v)
+        E = dot(r_u, r_u).simplify().refine()
+        F = dot(r_u, r_v).simplify().refine()
+        G = dot(r_v, r_v).simplify().refine()
+        return E, F, G
     @cached_property
     def metric_tensor(self):
         from einsteinpy.symbolic import MetricTensor
@@ -61,7 +64,10 @@ class ParametricSurface(GeometryMap):
         r_uu = self.expr().diff(self.sym(0), 2)
         r_uv = self.expr().diff(self.sym(0), self.sym(1))
         r_vv = self.expr().diff(self.sym(1), 2)
-        return dot(r_uu, n), dot(r_uv, n), dot(r_vv, n)
+        L = dot(r_uu, n).simplify().refine()
+        M = dot(r_uv, n).simplify().refine()
+        N = dot(r_vv, n).simplify().refine()
+        return L, M, N
     @cached_property
     def Omega(self):
         from einsteinpy.symbolic.tensor import BaseRelativityTensor
@@ -89,7 +95,7 @@ class ParametricSurface(GeometryMap):
         from sympy import Matrix
         return Matrix(tensor_product( 
             self.metric_tensor.change_config('uu'), 
-            self.Omega, i=1,j=0).tensor())
+            self.Omega, i=1,j=0).tensor().simplify().refine())
     def weingarten_transform(self, vec):
         """
         Args:
@@ -123,7 +129,9 @@ class ParametricSurface(GeometryMap):
     @cached_property
     def K_H(self):
         w = self.weingarten_matrix
-        return w[0,0] * w[1,1] - w[0,1] * w[1,0], (w[0,0] + w[1,1]) / 2
+        K = w[0,0] * w[1,1] - w[0,1] * w[1,0]
+        H = (w[0,0] + w[1,1]) / 2
+        return K.simplify().refine(), H.simplify().refine()
 
     @cached_property
     def prin_curvature_and_vector(self):
@@ -144,9 +152,9 @@ class ParametricSurface(GeometryMap):
             e1 = er1 / norm(er1)
             er2 = eigen[1][2][0][0] * r_u +  eigen[1][2][0][1] * r_v
             e2 = er2 / norm(er2)
-        k1 = k1.simplify()
-        e1 = e1.simplify()
-        k2 = k2.simplify()
-        e2 = e2.simplify()
+        k1 = k1.simplify().refine()
+        e1 = e1.simplify().refine()
+        k2 = k2.simplify().refine()
+        e2 = e2.simplify().refine()
         return (k1, e1), (k2, e2)
         

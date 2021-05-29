@@ -90,7 +90,7 @@ def norm(arr):
     from operator import add
     from functools import reduce
     from sympy import sqrt
-    return sqrt(reduce(add, arr.applyfunc(lambda x: x**2)))
+    return sqrt(reduce(add, arr.applyfunc(lambda x: x**2))).simplify().refine()
 
 
 def diff4r(r, x, n, coord='cartesian'):
