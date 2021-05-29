@@ -36,19 +36,19 @@ class ParametricSurface(GeometryMap):
     @cached_property
     def E_F_G(self): 
         from silkpy.sympy_utility import dot
-        r_u, r_v = self.r_u(), self.r_v()
+        r_u, r_v = self.r_u, self.r_v
         return dot(r_u, r_u), dot(r_u, r_v), dot(r_v, r_v)
     @cached_property
     def metric_tensor(self):
         from einsteinpy.symbolic import MetricTensor
-        E, F, G = self.E_F_G()
+        E, F, G = self.E_F_G
         return MetricTensor([[E, F], [F, G]], self.sym(), config='ll')
-        
+
     @cached_property
     def normal_vector(self):
         from silkpy.sympy_utility import cross, norm
         from einsteinpy.symbolic.vector import GenericVector
-        r_u, r_v = self.r_u(), self.r_v()
+        r_u, r_v = self.r_u, self.r_v
         r_u_x_r_v = cross(r_u, r_v)
         # cross product of r_u and r_v
         return r_u_x_r_v / norm(r_u_x_r_v)
@@ -57,7 +57,7 @@ class ParametricSurface(GeometryMap):
     @cached_property
     def L_M_N(self):
         from silkpy.sympy_utility import dot
-        n = self.normal_vector()
+        n = self.normal_vector
         r_uu = self.expr().diff(self.sym(0), 2)
         r_uv = self.expr().diff(self.sym(0), self.sym(1))
         r_vv = self.expr().diff(self.sym(1), 2)
@@ -65,22 +65,22 @@ class ParametricSurface(GeometryMap):
     @cached_property
     def Omega(self):
         from einsteinpy.symbolic.tensor import BaseRelativityTensor
-        L, M, N = self.L_M_N()
+        L, M, N = self.L_M_N
         return BaseRelativityTensor(
                     [[L, M], [M, N]], 
                     self.sym(), 
                     config='ll', 
-                    parent_metric=self.metric_tensor() # TODO: check the metric.
+                    parent_metric=self.metric_tensor # TODO: check the metric.
                 )
 
     @cached_property
     def christoffel_symbol(self):
         from einsteinpy.symbolic import ChristoffelSymbols
-        return ChristoffelSymbols.from_metric(self.metric_tensor())
+        return ChristoffelSymbols.from_metric(self.metric_tensor)
     @cached_property
     def riemann_curvature_tensor(self):
         from einsteinpy.symbolic import RiemannCurvatureTensor
-        return RiemannCurvatureTensor.from_christoffels(self.christoffel_symbol())
+        return RiemannCurvatureTensor.from_christoffels(self.christoffel_symbol)
 
     # \omega^m_k = \sum_{i} g^{mi} \Omega_{ik}
     @cached_property
@@ -88,8 +88,8 @@ class ParametricSurface(GeometryMap):
         from einsteinpy.symbolic.tensor import tensor_product
         from sympy import Matrix
         return Matrix(tensor_product( 
-            self.metric_tensor().change_config('uu'), 
-            self.Omega(), i=1,j=0).tensor())
+            self.metric_tensor.change_config('uu'), 
+            self.Omega, i=1,j=0).tensor())
     def weingarten_transform(self, vec):
         """
         Args:
@@ -97,7 +97,7 @@ class ParametricSurface(GeometryMap):
         """
         from sympy.solvers.solveset import linsolve
         from sympy import Matrix, symbols
-        r_u, r_v = self.r_u(), self.r_v()
+        r_u, r_v = self.r_u, self.r_v
 
         c_ru, c_rv = symbols('c_ru, c_rv', real=True)
         solset = linsolve(Matrix(
@@ -113,7 +113,7 @@ class ParametricSurface(GeometryMap):
             raise RuntimeError("We failed to decompose the input vec into r_u and r_v")
         else:
             c_ru, c_rv = next(iter(solset))
-        omega = self.weingarten_matrix()
+        omega = self.weingarten_matrix
         W_r_u = omega[0, 0] * r_u + omega[1, 0] * r_v
         W_r_v = omega[0, 1] * r_u + omega[1, 1] * r_v
         return c_ru * W_r_u + c_rv * W_r_v
@@ -122,14 +122,14 @@ class ParametricSurface(GeometryMap):
     # average curvature H = 1/2 * Tr(w^i_j)
     @cached_property
     def K_H(self):
-        w = self.weingarten_matrix()
+        w = self.weingarten_matrix
         return w[0,0] * w[1,1] - w[0,1] * w[1,0], (w[0,0] + w[1,1]) / 2
 
     @cached_property
     def prin_curvature_and_vector(self):
         from silkpy.sympy_utility import norm
-        w = self.weingarten_matrix()
-        r_u, r_v = self.r_u(), self.r_v()
+        w = self.weingarten_matrix
+        r_u, r_v = self.r_u, self.r_v
 
         eigen = w.eigenvects()
 
