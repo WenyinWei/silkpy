@@ -4,8 +4,6 @@ from sympy import Array as _Array
 from ..geometry_map import GeometryMap
 class ParametricSurface(GeometryMap):
     
-    def __init__(self, exprs, syms):
-        GeometryMap.__init__(self, exprs, syms)
     def subs(self, subs_arg):
         return ParametricSurface(self._exprs.subs(subs_arg), self._syms)
 

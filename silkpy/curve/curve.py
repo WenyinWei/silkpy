@@ -5,7 +5,7 @@ from sympy import sqrt as _sqrt
 
 from ..geometry_map import GeometryMap
 class ParametricCurve(GeometryMap):
-    def __init__(self, exprs, sym):
+    def __init__(self, sym, exprs):
         if not isinstance(sym, list): sym = [sym]
         GeometryMap.__init__(self, exprs, sym)
     def subs(self, subs_arg):

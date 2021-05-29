@@ -5,7 +5,7 @@ from numpy import isin
 class GeometryMap:
     """Base class for geometry map.
     """
-    def __init__(self, exprs, syms):
+    def __init__(self, syms, exprs):
         from sympy import Array, oo
         if not isinstance(exprs, list) and not isinstance(exprs, Array):
             raise ValueError("The ctor arg of GeometryMap -- exprs -- should be a list of sympy expressions.")
