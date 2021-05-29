@@ -1,11 +1,11 @@
 from sympy import Array as _Array
-
+from functools import cached_property
 
 from ..geometry_map import GeometryMap
 class ParametricSurface(GeometryMap):
     
     def subs(self, subs_arg):
-        return ParametricSurface(self._exprs.subs(subs_arg), self._syms)
+        return ParametricSurface(self._syms, self._exprs.subs(subs_arg))
 
     def chain(self, other):
         from ..geometry_map.coord_transform import CoordTransform
@@ -21,31 +21,40 @@ class ParametricSurface(GeometryMap):
     def __or__(self, other):
         return self.chain(other)
 
+    @cached_property
+    def r_u(self):
+        return self.expr().diff(self.sym(0)).simplify()
+    @cached_property
+    def r_v(self):
+        return self.expr().diff(self.sym(1)).simplify()
+
     # def __str__(self):
     #     return f"A surface = {self.expr()}, with {self.u} domain {self._u_limit}, {self.v} domain {self._v_limit}."
 
     # 1-form, ds^2 = Edu^2 + 2Fdudv + Gdv^2
     # dA = |\vec{r}_u x \vec{r}_v |  differential area 
+    @cached_property
     def E_F_G(self): 
         from silkpy.sympy_utility import dot
-        r_u = self.expr().diff(self.sym(0))
-        r_v = self.expr().diff(self.sym(1))
+        r_u, r_v = self.r_u(), self.r_v()
         return dot(r_u, r_u), dot(r_u, r_v), dot(r_v, r_v)
+    @cached_property
     def metric_tensor(self):
         from einsteinpy.symbolic import MetricTensor
         E, F, G = self.E_F_G()
         return MetricTensor([[E, F], [F, G]], self.sym(), config='ll')
-            
+        
+    @cached_property
     def normal_vector(self):
         from silkpy.sympy_utility import cross, norm
         from einsteinpy.symbolic.vector import GenericVector
-        r_u = self.expr().diff(self.sym(0))
-        r_v = self.expr().diff(self.sym(1))
+        r_u, r_v = self.r_u(), self.r_v()
         r_u_x_r_v = cross(r_u, r_v)
         # cross product of r_u and r_v
         return r_u_x_r_v / norm(r_u_x_r_v)
 
     # 2-form, 2\delta = L du^2 + 2M dudv + N dv^2
+    @cached_property
     def L_M_N(self):
         from silkpy.sympy_utility import dot
         n = self.normal_vector()
@@ -53,6 +62,7 @@ class ParametricSurface(GeometryMap):
         r_uv = self.expr().diff(self.sym(0), self.sym(1))
         r_vv = self.expr().diff(self.sym(1), 2)
         return dot(r_uu, n), dot(r_uv, n), dot(r_vv, n)
+    @cached_property
     def Omega(self):
         from einsteinpy.symbolic.tensor import BaseRelativityTensor
         L, M, N = self.L_M_N()
@@ -62,15 +72,18 @@ class ParametricSurface(GeometryMap):
                     config='ll', 
                     parent_metric=self.metric_tensor() # TODO: check the metric.
                 )
-        
+
+    @cached_property
     def christoffel_symbol(self):
         from einsteinpy.symbolic import ChristoffelSymbols
         return ChristoffelSymbols.from_metric(self.metric_tensor())
+    @cached_property
     def riemann_curvature_tensor(self):
         from einsteinpy.symbolic import RiemannCurvatureTensor
         return RiemannCurvatureTensor.from_christoffels(self.christoffel_symbol())
 
     # \omega^m_k = \sum_{i} g^{mi} \Omega_{ik}
+    @cached_property
     def weingarten_matrix(self):
         from einsteinpy.symbolic.tensor import tensor_product
         from sympy import Matrix
@@ -84,8 +97,7 @@ class ParametricSurface(GeometryMap):
         """
         from sympy.solvers.solveset import linsolve
         from sympy import Matrix, symbols
-        r_u = self.expr().diff(self.sym(0))
-        r_v = self.expr().diff(self.sym(1))
+        r_u, r_v = self.r_u(), self.r_v()
 
         c_ru, c_rv = symbols('c_ru, c_rv', real=True)
         solset = linsolve(Matrix(
@@ -108,15 +120,16 @@ class ParametricSurface(GeometryMap):
 
     # total curvature K = det(w^i_j)
     # average curvature H = 1/2 * Tr(w^i_j)
+    @cached_property
     def K_H(self):
         w = self.weingarten_matrix()
         return w[0,0] * w[1,1] - w[0,1] * w[1,0], (w[0,0] + w[1,1]) / 2
-    
+
+    @cached_property
     def prin_curvature_and_vector(self):
         from silkpy.sympy_utility import norm
         w = self.weingarten_matrix()
-        r_u = self.expr().diff(self.sym(0))
-        r_v = self.expr().diff(self.sym(1))
+        r_u, r_v = self.r_u(), self.r_v()
 
         eigen = w.eigenvects()
 
@@ -131,5 +144,9 @@ class ParametricSurface(GeometryMap):
             e1 = er1 / norm(er1)
             er2 = eigen[1][2][0][0] * r_u +  eigen[1][2][0][1] * r_v
             e2 = er2 / norm(er2)
+        k1 = k1.simplify()
+        e1 = e1.simplify()
+        k2 = k2.simplify()
+        e2 = e2.simplify()
         return (k1, e1), (k2, e2)
         
