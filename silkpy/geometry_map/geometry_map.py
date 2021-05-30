@@ -1,5 +1,4 @@
-
-
+from functools import cached_property
 
 class GeometryMap:
     """Base class for geometry map.
@@ -20,28 +19,37 @@ class GeometryMap:
             else:
                 self._syms.append( (sym, -oo, +oo) )
 
+    @property
+    def exprs(self):
+        return self._exprs
     def expr(self, i=None):
         if i is None:
             return self._exprs
         else:
             return self._exprs[i]
+    def subs(self, *arg):
+        return GeometryMap(self, self._exprs.subs(*arg), self._syms)
 
-    def subs(self, subs_arg):
-        return GeometryMap(self, self._exprs.subs(subs_arg), self._syms)
-
+    @property
+    def syms(self):
+        return [sym[0] for sym in self._syms]
     def sym(self, i=None):
         if i is None:
             return [sym[0] for sym in self._syms]
         else:
             return self._syms[i][0]
 
+    @property
+    def sym_limits(self):
+        return [sym[1:] for sym in self._syms]
     def sym_limit(self, i=None):
         if i is None:
             return [sym[1:] for sym in self._syms]
         else:
             return self._syms[i][1:]
 
+    @cached_property
     def jacobian(self):
         from sympy import Array
-        return self.expr().diff(
-                    Array(self.sym()))
+        return self.exprs().diff(
+                Array(self.syms()))
