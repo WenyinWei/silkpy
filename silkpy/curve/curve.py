@@ -1,6 +1,3 @@
-from sympy import Array as _Array
-from sympy import diff as _diff
-from sympy import sqrt as _sqrt
 from functools import cached_property
 
 
