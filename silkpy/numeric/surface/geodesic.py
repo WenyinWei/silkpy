@@ -1,5 +1,5 @@
-from silkpy.curve import ParametricCurve as _ParametricCurve
-from silkpy.surface import ParametricSurface as _ParametricSurface
+from silkpy import ParametricCurve as _ParametricCurve
+from silkpy import ParametricSurface as _ParametricSurface
 
 
 def geodesic_ncurve(surface: _ParametricSurface, ic_uv, ic_uv_t, t1=5, dt=0.05):
@@ -41,7 +41,7 @@ def geodesic_ncurve(surface: _ParametricSurface, ic_uv, ic_uv_t, t1=5, dt=0.05):
 def geodesic_polar_ncoordinate(surface: _ParametricSurface, origin_uv: tuple, rho1=1.2, nrho=12, ntheta=48):
     import numpy as np
     from sympy import pi, sin, cos
-    from silkpy.geometry_map import lambdify
+    from silkpy.symbolic.geometry_map import lambdify
     from scipy.interpolate import interp1d
 
     surface_func = lambdify(surface)
