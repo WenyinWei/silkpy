@@ -53,3 +53,9 @@ class GeometryMap:
         from sympy import Array
         return self.exprs().diff(
                 Array(self.syms()))
+
+def lambdify(gmap: GeometryMap, *arg, **kwarg):
+    from sympy import lambdify
+    return lambdify(
+        gmap.sym(), 
+        gmap.expr().tolist(), *arg, **kwarg)
