@@ -54,7 +54,7 @@ class NGeometryMap:
         return self.exprs().diff(
                 Array(self.syms()))
 
-    def lambdify(self, *arg, **kwarg):
+    def lambdified(self, *arg, **kwarg):
         from sympy import lambdify
         return lambdify(
             self.sym(), 
