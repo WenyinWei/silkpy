@@ -1,6 +1,6 @@
 from functools import cached_property
 
-class GeometryMap:
+class NGeometryMap:
     """Base class for geometry map.
     """
     def __init__(self, syms, exprs):
@@ -54,7 +54,7 @@ class GeometryMap:
         return self.exprs().diff(
                 Array(self.syms()))
 
-    def lambdified(self, *arg, **kwarg):
+    def lambdify(self, *arg, **kwarg):
         from sympy import lambdify
         return lambdify(
             self.sym(), 
