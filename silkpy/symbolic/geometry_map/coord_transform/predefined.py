@@ -2,20 +2,18 @@
 from .coord_transform import CoordTransform as _CoordTransform
 class Cylindrical2Cartesian(_CoordTransform):
     def __init__(self, syms=None):
-        from sympy import symbols, Array, cos, sin
+        from sympy import symbols, cos, sin
         if syms is None:
-            _R = symbols('R', positive=True)
-            _Z, _phi = symbols('Z, phi', real=True)
-            syms = (_R, _Z, _phi)
+            syms = (symbols('R', positive=True), *symbols('Z, phi', real=True))
         R, Z, phi = syms[0], syms[1], syms[2]
-        _CoordTransform.__init__(self, [R*cos(phi), R*sin(phi), Z], syms)
+        _CoordTransform.__init__(self, syms, [R*cos(phi), R*sin(phi), Z])
 
 class Cartesian2Cylindrical(_CoordTransform):
     def __init__(self, syms=None):
-        from sympy import symbols, Array, cos, sin, sqrt, atan2
+        from sympy import symbols, sqrt, atan2
         if syms is None:
             syms = symbols('x, y, z', real=True)
         x, y, z = syms[0], syms[1], syms[2]
-        _CoordTransform.__init__(self, [sqrt(x**2+y**2), z, atan2(y, x)], syms)
+        _CoordTransform.__init__(self, syms, [sqrt(x**2+y**2), z, atan2(y, x)])
 
 

@@ -3,8 +3,8 @@ from ..geometry_map import GeometryMap as _GeometryMap
 class CoordTransform(_GeometryMap):
 
     def chain(self, other):
-        from silkpy.curve import ParametricCurve
-        from silkpy.surface import ParametricSurface
+        from silkpy.symbolic.curve import ParametricCurve
+        from silkpy.symbolic.surface import ParametricSurface
 
         # assert( self.expr().rank() == 1)
         assert( len(other.sym()) == int(self.expr().shape.args[0]) )

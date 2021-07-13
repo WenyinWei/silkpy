@@ -5,9 +5,9 @@ from ..geometry_map import GeometryMap
 class ParametricCurve(GeometryMap):
     def __init__(self, sym, exprs):
         if not isinstance(sym, list): sym = [sym]
-        GeometryMap.__init__(self, exprs, sym)
+        GeometryMap.__init__(self, sym, exprs)
     def subs(self, subs_arg):
-        return ParametricCurve(self._exprs.subs(subs_arg), self._syms)
+        return ParametricCurve(self._syms, self._exprs.subs(subs_arg))
 
     def chain(self, other):
         from ..geometry_map.coord_transform import CoordTransform
