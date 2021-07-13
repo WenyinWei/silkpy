@@ -10,17 +10,17 @@ class CoordTransform(_GeometryMap):
         assert( len(other.sym()) == int(self.expr().shape.args[0]) )
 
         if isinstance(other, ParametricCurve):
-            return ParametricCurve(other._exprs.subs({
-                other.sym(i): self.expr(i) for i in range(len(self.sym()))}), 
-                self._syms)
+            return ParametricCurve(self._syms, other._exprs.subs({
+                other.sym(i): self.expr(i) for i in range(len(self.sym()))})
+                )
         elif isinstance(other, ParametricSurface):
-            return ParametricSurface(other._exprs.subs({
-                other.sym(i): self.expr(i) for i in range(len(self.sym()))}), 
-                self._syms)
+            return ParametricSurface(self._syms, other._exprs.subs({
+                other.sym(i): self.expr(i) for i in range(len(self.sym()))})
+                )
         elif isinstance(other, CoordTransform):
-            return CoordTransform(other._exprs.subs({
-                other.sym(i): self.expr(i) for i in range(len(self.sym()))}), 
-                self._syms)
+            return CoordTransform(self._syms, other._exprs.subs({
+                other.sym(i): self.expr(i) for i in range(len(self.sym()))})
+                )
         else:
             raise TypeError("The chain succession must be a GeometryMap.")
     def __or__(self, other):
