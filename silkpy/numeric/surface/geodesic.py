@@ -1,8 +1,8 @@
-from silkpy import ParametricCurve as _ParametricCurve
-from silkpy import ParametricSurface as _ParametricSurface
+from silkpy.symbolic.curve.curve import ParametricCurve 
+from silkpy.symbolic.surface.surface import ParametricSurface 
 
 
-def geodesic_ncurve(surface: _ParametricSurface, ic_uv, ic_uv_t, t1=5, dt=0.05):
+def geodesic_ncurve(surface: ParametricSurface, ic_uv, ic_uv_t, t1=5, dt=0.05):
     from sympy import lambdify
     from scipy.integrate import ode as sciode
     import numpy as np
@@ -38,13 +38,12 @@ def geodesic_ncurve(surface: _ParametricSurface, ic_uv, ic_uv_t, t1=5, dt=0.05):
         u_arr[i] = scioder.integrate(scioder.t+dt)
     return t_arr, (u_arr[:, 0], u_arr[:, 2])
 
-def geodesic_polar_ncoordinate(surface: _ParametricSurface, origin_uv: tuple, rho1=1.2, nrho=12, ntheta=48):
+def geodesic_polar_ncoordinate(surface: ParametricSurface, origin_uv: tuple, rho1=1.2, nrho=12, ntheta=48):
     import numpy as np
     from sympy import pi, sin, cos
-    from silkpy.symbolic.geometry_map import lambdify
     from scipy.interpolate import interp1d
 
-    surface_func = lambdify(surface)
+    surface_func = surface.lambdified()
     rho_arr = np.linspace(0.0, rho1, num=nrho, endpoint=True)
     theta_arr=np.linspace(0.0, 2*float(pi), num=ntheta, endpoint=False)
     u_grid = np.empty((len(rho_arr), len(theta_arr)))
