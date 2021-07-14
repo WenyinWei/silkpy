@@ -1,8 +1,8 @@
-from .surface import ParametricSurface as _ParametricSurface
+from .surface import ParametricSurface
 
 # (lambda surface: surface.curvature().simplify())
 def draw_surface_plotly(
-    surface:_ParametricSurface, 
+    surface:ParametricSurface, 
     domain=[(-1, 1), (-1, 1)], num=[50, 50], exist_range=[(None, None), (None, None), (None, None)], 
     color_func=None,
     fig=None, *arg, **kwarg):
@@ -29,9 +29,9 @@ def draw_surface_plotly(
         float(domain[1].start):float(domain[1].end):int(num[1])*1j,
     ]
 
-    values_ = lambdify(surface.sym(), surface.expr(), 'numpy')(u_domain_, v_domain_)
+    values_ = lambdify(surface.syms, surface.exprs, 'numpy')(u_domain_, v_domain_)
     if color_func is not None:
-        colors_ = lambdify(surface.sym(), color_func(surface), 'numpy')(u_domain_, v_domain_)
+        colors_ = lambdify(surface.syms, color_func(surface), 'numpy')(u_domain_, v_domain_)
 
     kwarg['x'] = values_[0]
     kwarg['y'] = values_[1]
