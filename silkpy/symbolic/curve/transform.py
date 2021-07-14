@@ -8,7 +8,7 @@ def curve_normalize(
     from sympy import integrate
     from silkpy.sympy_utility import norm
     
-    drdt = norm(old_curve.expr().diff(old_curve.sym(0)))
+    drdt = norm(old_curve.exprs.diff(old_curve.sym(0)))
     new_var_in_old = integrate(drdt, old_curve.sym(0)).simplify()
     solset = solveset(Eq(new_var, new_var_in_old), old_curve.sym(0), domain=S.Reals).simplify()
     try:
@@ -24,7 +24,7 @@ def curve_normalize(
         (new_var, 
          new_var_in_old.subs(old_curve.sym(0), old_curve.sym_limit(0)[0]),
          new_var_in_old.subs(old_curve.sym(0), old_curve.sym_limit(0)[1])),
-        old_curve.expr().subs(old_curve.sym(0), old_var_in_new)
+        old_curve.exprs.subs(old_curve.sym(0), old_var_in_new)
         )
 
 # TODO: Check the following function  

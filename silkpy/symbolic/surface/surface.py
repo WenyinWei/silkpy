@@ -7,29 +7,27 @@ class ParametricSurface(GeometryMap):
     def subs(self, subs_arg):
         return ParametricSurface(self._syms, self._exprs.subs(subs_arg))
 
-    def chain(self, other):
+    def __or__(self, other):
         from ..geometry_map.coord_transform import CoordTransform
 
-        assert( len(other.sym()) == int(self.expr().shape.args[0]) )
+        assert( len(other.syms) == int(self.exprs.shape.args[0]) )
         
         if isinstance(other, CoordTransform):
             return ParametricSurface(other._exprs.subs({
-                other.sym(i): self.expr(i) for i in range(len(self.sym()))}), 
+                other.sym(i): self.expr(i) for i in range(len(self.syms))}), 
                 self._syms)
         else:
             raise TypeError("The chain succession must be a GeometryMap.")
-    def __or__(self, other):
-        return self.chain(other)
 
     @cached_property
     def r_u(self):
-        return self.expr().diff(self.sym(0)).simplify().refine()
+        return self.exprs.diff(self.sym(0)).simplify().refine()
     @cached_property
     def r_v(self):
-        return self.expr().diff(self.sym(1)).simplify().refine()
+        return self.exprs.diff(self.sym(1)).simplify().refine()
 
     # def __str__(self):
-    #     return f"A surface = {self.expr()}, with {self.u} domain {self._u_limit}, {self.v} domain {self._v_limit}."
+    #     return f"A surface = {self.exprs}, with {self.u} domain {self._u_limit}, {self.v} domain {self._v_limit}."
 
     # 1-form, ds^2 = Edu^2 + 2Fdudv + Gdv^2
     # dA = |\vec{r}_u x \vec{r}_v |  differential area 
@@ -45,7 +43,7 @@ class ParametricSurface(GeometryMap):
     def metric_tensor(self):
         from einsteinpy.symbolic import MetricTensor
         E, F, G = self.E_F_G
-        return MetricTensor([[E, F], [F, G]], self.sym(), config='ll')
+        return MetricTensor([[E, F], [F, G]], self.syms, config='ll')
 
     @cached_property
     def normal_vector(self):
@@ -61,9 +59,9 @@ class ParametricSurface(GeometryMap):
     def L_M_N(self):
         from silkpy.sympy_utility import dot
         n = self.normal_vector
-        r_uu = self.expr().diff(self.sym(0), 2)
-        r_uv = self.expr().diff(self.sym(0), self.sym(1))
-        r_vv = self.expr().diff(self.sym(1), 2)
+        r_uu = self.exprs.diff(self.sym(0), 2)
+        r_uv = self.exprs.diff(self.sym(0), self.sym(1))
+        r_vv = self.exprs.diff(self.sym(1), 2)
         L = dot(r_uu, n).simplify().refine()
         M = dot(r_uv, n).simplify().refine()
         N = dot(r_vv, n).simplify().refine()
@@ -74,7 +72,7 @@ class ParametricSurface(GeometryMap):
         L, M, N = self.L_M_N
         return BaseRelativityTensor(
                     [[L, M], [M, N]], 
-                    self.sym(), 
+                    self.syms, 
                     config='ll', 
                     parent_metric=self.metric_tensor # TODO: check the metric.
                 )

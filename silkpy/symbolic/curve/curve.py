@@ -12,7 +12,7 @@ class ParametricCurve(GeometryMap):
     def __or__(self, other):
         from ..geometry_map.coord_transform import CoordTransform
 
-        assert( len(other.sym()) == int(self.expr().shape.args[0]) )
+        assert( len(other.syms) == int(self.exprs.shape.args[0]) )
         
         if isinstance(other, CoordTransform):
             return ParametricCurve(other._exprs.subs({
@@ -31,14 +31,14 @@ class ParametricCurve(GeometryMap):
     @cached_property
     def curvature(self): # k(t)
         from silkpy.sympy_utility import norm, cross 
-        drdt = self.expr().diff(self.sym(0))
+        drdt = self.exprs.diff(self.sym(0))
         d2rdt2 = drdt.diff(self.sym(0))
         return norm(cross(drdt, d2rdt2)) / norm(drdt)**3
     
     @cached_property
     def torsion(self): # \tau(t)
         from silkpy.sympy_utility import norm, cross, triple_prod
-        drdt = self.expr().diff(self.sym(0))
+        drdt = self.exprs.diff(self.sym(0))
         d2rdt2 = drdt.diff(self.sym(0))
         d3rdt3 = d2rdt2.diff(self.sym(0))
         
@@ -49,8 +49,8 @@ class ParametricCurve(GeometryMap):
     @cached_property
     def T_N_B(self): # \vec{T}(t), \vec{N}(t), \vec{B}(t)
         from silkpy.sympy_utility import norm, cross
-        drdt = self.expr().diff(self.sym(0))
-        d2rdt2 = self.expr().diff(self.sym(0), 2)
+        drdt = self.exprs.diff(self.sym(0))
+        d2rdt2 = self.exprs.diff(self.sym(0), 2)
 
         T = (drdt / norm(drdt)).simplify()
         N = (d2rdt2 / norm(d2rdt2)).simplify()
