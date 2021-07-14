@@ -6,7 +6,7 @@ class Cylindrical2Cartesian(CoordTransform):
         if syms is None:
             syms = (symbols('R', positive=True), *symbols('Z, phi', real=True))
         R, Z, phi = syms[0], syms[1], syms[2]
-        _CoordTransform.__init__(self, syms, [R*cos(phi), R*sin(phi), Z])
+        CoordTransform.__init__(self, syms, [R*cos(phi), R*sin(phi), Z])
 
 class Cartesian2Cylindrical(CoordTransform):
     def __init__(self, syms=None):
@@ -14,6 +14,6 @@ class Cartesian2Cylindrical(CoordTransform):
         if syms is None:
             syms = symbols('x, y, z', real=True)
         x, y, z = syms[0], syms[1], syms[2]
-        _CoordTransform.__init__(self, syms, [sqrt(x**2+y**2), z, atan2(y, x)])
+        CoordTransform.__init__(self, syms, [sqrt(x**2+y**2), z, atan2(y, x)])
 
 
