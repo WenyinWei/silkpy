@@ -27,6 +27,7 @@ def curve_normalize(
         old_curve.expr().subs(old_curve.sym(0), old_var_in_new)
         )
 
+# TODO: Check the following function  
 def curve_param_transform(old_curve, newt, t_expr=None):
     from sympy import S, solveset, Eq
     return ParametricCurve(
