@@ -45,8 +45,8 @@ class GeometryMap:
         return self.exprs.diff(
                 Array(self.syms))
 
-    # def lambdified(self, *arg, **kwarg):
-    #     from sympy import lambdify
-    #     return lambdify(
-    #         self.sym(), 
-    #         self.expr().tolist(), *arg, **kwarg)
+    def lambdified(self, *arg, **kwarg):
+        from sympy import lambdify
+        return lambdify(
+            self.syms, 
+            self.exprs.tolist(), *arg, **kwarg)
