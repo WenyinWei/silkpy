@@ -9,7 +9,7 @@ class ParametricCurve(GeometryMap):
     def subs(self, subs_arg):
         return ParametricCurve(self._syms, self._exprs.subs(subs_arg))
 
-    def chain(self, other):
+    def __or__(self, other):
         from ..geometry_map.coord_transform import CoordTransform
 
         assert( len(other.sym()) == int(self.expr().shape.args[0]) )
@@ -20,8 +20,6 @@ class ParametricCurve(GeometryMap):
                 self._syms)
         else:
             raise TypeError("The chain succession must be a GeometryMap.")
-    def __or__(self, other):
-        return self.chain(other)
 
     @cached_property
     def r_t(self):

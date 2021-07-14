@@ -1,10 +1,9 @@
 
 from ..geometry_map import GeometryMap as _GeometryMap
 class CoordTransform(_GeometryMap):
-
-    def chain(self, other):
-        from silkpy.symbolic.curve import ParametricCurve
-        from silkpy.symbolic.surface import ParametricSurface
+    def __or__(self, other):
+        from silkpy.symbolic.curve.curve import ParametricCurve
+        from silkpy.symbolic.surface.surface import ParametricSurface
 
         # assert( self.expr().rank() == 1)
         assert( len(other.sym()) == int(self.expr().shape.args[0]) )
@@ -23,5 +22,3 @@ class CoordTransform(_GeometryMap):
                 )
         else:
             raise TypeError("The chain succession must be a GeometryMap.")
-    def __or__(self, other):
-        return self.chain(other)
