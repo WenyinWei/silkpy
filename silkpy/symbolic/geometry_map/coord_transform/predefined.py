@@ -1,6 +1,6 @@
 
-from .coord_transform import CoordTransform as _CoordTransform
-class Cylindrical2Cartesian(_CoordTransform):
+from .coord_transform import CoordTransform
+class Cylindrical2Cartesian(CoordTransform):
     def __init__(self, syms=None):
         from sympy import symbols, cos, sin
         if syms is None:
@@ -8,7 +8,7 @@ class Cylindrical2Cartesian(_CoordTransform):
         R, Z, phi = syms[0], syms[1], syms[2]
         _CoordTransform.__init__(self, syms, [R*cos(phi), R*sin(phi), Z])
 
-class Cartesian2Cylindrical(_CoordTransform):
+class Cartesian2Cylindrical(CoordTransform):
     def __init__(self, syms=None):
         from sympy import symbols, sqrt, atan2
         if syms is None:
