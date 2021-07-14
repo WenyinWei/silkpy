@@ -35,31 +35,22 @@ class NGeometryMap:
     @property
     def exprs(self):
         return self._exprs
-    def expr(self, i=None):
-        if i is None:
-            return self._exprs
-        else:
-            return self._exprs[i]
+    def expr(self, i:int):
+        return self._exprs[i]
     # def subs(self, *arg):
     #     return GeometryMap(self, self._exprs.subs(*arg), self._syms)
 
     @property
     def syms(self):
         return [sym[0] for sym in self._syms]
-    def sym(self, i=None):
-        if i is None:
-            return [sym[0] for sym in self._syms]
-        else:
-            return self._syms[i][0]
+    def sym(self, i:int):
+        return self._syms[i][0]
 
     @property
     def sym_limits(self):
         return [sym[1:] for sym in self._syms]
-    def sym_limit(self, i=None):
-        if i is None:
-            return [sym[1:] for sym in self._syms]
-        else:
-            return self._syms[i][1:]
+    def sym_limit(self, i:int):
+        return self._syms[i][1:]
 
     @cached_property
     def jacobian(self):
